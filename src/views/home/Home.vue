@@ -1,14 +1,18 @@
 <template>
   <div id="home">
     <nav-bar class="home-nav"><div slot="center">购物街</div></nav-bar>
-   <scroll class="content" ref="scroll">
+   <scroll class="content"
+    ref="scroll"
+     :probe-type="3"
+      @scroll="contentScroll" :pull-up-load="true"
+      @pullingUp="loadMore">
       <home-swiper :banners='banners'></home-swiper>
   <home-recommend-view :recommends='recommends'></home-recommend-view>
   <feature-view></feature-view>
   <tab-control :titles="['流行','新款','精选']" class="tab-control" @tabClick="tabClick"></tab-control>
   <goods-list :goods="goods[currentType].list"></goods-list>
    </scroll>
-  <back-top @click.native="backClick"></back-top>
+  <back-top @click.native="backClick" v-show="isShowBackTop"></back-top>
   </div>
 </template>
 
@@ -37,6 +41,7 @@ export default {
        'sell':{page:0,list:[]}
      },
      currentType:'pop',
+     isShowBackTop:false
     }
   },
 components:{
@@ -59,10 +64,19 @@ created(){
   this.getHomeGoods('pop')
   this.getHomeGoods('new')
   this.getHomeGoods('sell')
+  
 },
 methods:{
    backClick(){
-     this.$refs.scroll.scroll.scrollTo(0,0,500)
+     this.$refs.scroll.scrollTo(0, 0, 300)
+
+  },
+  contentScroll(position){
+    this.isShowBackTop=(-position.y)>1000
+  },
+  loadMore(){
+   this.getHomeGoods(this.currentType)
+
   },
   // 事件监听相关的方法
   tabClick(index){
@@ -90,6 +104,8 @@ methods:{
       getHomeGoods(type,page).then((res)=>{
       this.goods[type].list.push(...res.data.list)
        this.goods[type].page += 1
+       this.$refs.scroll.refresh()
+       this.$refs.scroll.finishPullUp()
   })
   },
 }
@@ -117,13 +133,18 @@ height: 100vh;
    top: 44px;
     z-index: 9;
  }
- .content{
+  .content{
  height: 300px;
- /* overflow: hidden; */
- position: absolute;
+  /* overflow: hidden;  */
+   position: absolute;
  top: 44px;
  bottom: 49px;
  left: 0;
 right: 0;
- }
+ }    
+ /* .content {
+   height: calc(100% - 93px);
+   overflow: hidden;
+   margin-top: 44px;
+ } */
 </style>
