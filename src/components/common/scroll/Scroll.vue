@@ -15,9 +15,9 @@ export default {
 		    type: Number,
         default: 0
       },
-      pullUpload:{
+      pullUpLoad:{
         type:Boolean,
-        default:true
+        default:false
       }
   },
     data(){
@@ -25,6 +25,11 @@ export default {
             scroll:null
         }
     },
+    // computed:{
+    //   scrollY(){
+    //     return this.scroll.y
+    //   }
+    // },
 mounted(){
   //1.创建BScroll对象
       this.scroll=new BScroll(this.$refs.wrapper,{ 
@@ -36,25 +41,29 @@ mounted(){
 //  2.  监听滚动的位置
    this.scroll.on('scroll',(position)=>{
      this.$emit('scroll',position)
+    //  console.log(this.scroll);
+    this.scroll.refresh()
    })
-   //3. 监听上拉事件
-   this.scroll.on('pullingUp',()=>{
-     this.$emit('pullingUp')
-  //    setTimeout(()=>{
-  //      scroll.pullUpLoad()
-  //    },2000)
-   })
-   
+  //  //3. 监听上拉事件
+  if(this.pullUpLoad){
+    this.scroll.on('pullingUp',()=>{
+      this.$emit('pullingUp')
+    })
+  } 
   },
     methods:{
       scrollTo(x,y,time=300){
-        this.scroll.scrollTo(x,y,time)
+        this.scroll && this.scroll.scrollTo && this.scroll.scrollTo(x,y,time)
       },
+   refresh(){
+    //  console.log("----------");
+      this.scroll && this.scroll.scrollTo && this.scroll.refresh()
+   },
       finishPullUp(){
-        this.scroll.finishPullUp()
+        this.scroll && this.scroll.finishPullUp() 
       },
-      refresh(){
-        this.scroll.refresh()
+      getScrollY(){
+        return this.scroll?this.scroll.y:0
       }
     },
 }

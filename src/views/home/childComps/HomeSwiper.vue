@@ -2,7 +2,7 @@
   <swiper>
       <swiper-item v-for="(item,index) in banners" :key="index">
           <a :href="item.link">
-              <img :src="item.image" alt="">
+              <img :src="item.image" alt="" @load="imageLoad">
           </a>
       </swiper-item>
   </swiper>
@@ -14,14 +14,28 @@ export default {
   components: {
        Swiper,SwiperItem
         },
-props:{
- banners:{
+  props:{
+    banners:{
     type:Array,
     default(){
             return []
         }
+    },
+},
+    data(){
+        return{
+            isLoad:false
+        }
+    },
+ methods:{
+        imageLoad(){
+            // 设置一个变量 只让homeswiper只触发一次 节流阀
+            if(!this.isLoad){
+                this.$emit("swiperImageLoad")
+                this.isLoad=true
+            }
+        }
     }
-}
 }
 </script>
 

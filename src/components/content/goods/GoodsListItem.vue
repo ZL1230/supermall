@@ -1,6 +1,6 @@
 <template>
   <div  class="goods-item">
-      <img :src="goodsItem.show.img" alt="">
+      <img :src="goodsItem.show.img" alt="" @load="imgLoad" @click="itemClick">
       <div class="goods-info">
       <p>{{goodsItem.title}}</p>
       <span class="price">${{goodsItem.price}}</span>
@@ -15,7 +15,22 @@ export default {
         goodsItem:{
             type:Object,
          default: {}
-        }
+        } 
+    },
+    methods:{
+      imgLoad(){ 
+        this.$bus.$emit('itemImageLoad')//事件总线
+      },
+      itemClick(){//push是可以返回 replace不可以返回
+        // this.$router.push('/detail/'+this.goodsItem.iid) //1.方式一 params方式
+
+        this.$router.push({   //2.方式二 query方式
+          path:'/detail',
+          query:{
+            iid:this.goodsItem.iid
+          }
+        })
+      }
     }
 }
 </script>
